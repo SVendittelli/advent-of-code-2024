@@ -3,7 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "start": "bun run day1/day1.ts"
+    "start": "bun run day1/index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -12,4 +12,3 @@
     "typescript": "^5.0.0"
   }
 }
-

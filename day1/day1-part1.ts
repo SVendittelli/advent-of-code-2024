@@ -1,4 +1,4 @@
-const path = "day1/input1.txt";
+const path = "day1/input.txt";
 const file = Bun.file(path);
 
 const input = await file.text();
