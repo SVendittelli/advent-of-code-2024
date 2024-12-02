@@ -32,8 +32,7 @@ for (let i = 0; i < lines.length; ++i) {
   for (let j = 0; j < levels.length; ++j) {
     const tempLevels = [...levels];
     tempLevels.splice(j, 1);
-    const safeIfRemoved = safetyChecker(tempLevels);
-    if (safeIfRemoved) {
+    if (safetyChecker(tempLevels)) {
       ++count2;
       break;
     }
