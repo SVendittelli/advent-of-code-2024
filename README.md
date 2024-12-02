@@ -20,4 +20,10 @@ To run a specific day, replace `X` with the day number you want:
 bun start -d X
 ```
 
+To run to all the days:
+
+```bash
+bun start -a
+```
+
 This project was created using `bun init` in bun v1.1.38. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.

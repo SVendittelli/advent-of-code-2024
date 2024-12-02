@@ -1,5 +1,6 @@
 import { parseArgs } from "util";
-import { allDays, numberToDay } from "./utils";
+import { allDays, lastDay, numberToDay } from "./utils";
+import type { Day } from "./utils/types";
 
 const { values } = parseArgs({
   args: Bun.argv,
@@ -8,23 +9,35 @@ const { values } = parseArgs({
       type: "string",
       short: "d",
     },
+    all: {
+      type: "boolean",
+      short: "a",
+    },
   },
   strict: true,
   allowPositionals: true,
 });
 
-if (values.day) {
-  // Run a specific day
-  const day = numberToDay(+values.day);
+const runDay = async (day: Day) => {
+  console.group(day);
   await import(`./${day}`);
-} else {
-  // Run all days
+  console.groupEnd();
+};
+
+if (values.all) {
+  // Run all the days
   const days = await allDays();
 
   for (let i = 0; i < days.length; ++i) {
     const day = days[i];
-    console.group(day);
-    await import(`./${day}`);
-    console.groupEnd();
+    await runDay(day);
   }
+} else if (values.day) {
+  // Run a specific day
+  const day = numberToDay(+values.day);
+  await runDay(day);
+} else {
+  // Run last day
+  const day = await lastDay();
+  await runDay(day);
 }
