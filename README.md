@@ -11,13 +11,13 @@ bun install
 To run to latest day:
 
 ```bash
-bun run start
+bun start
 ```
 
 To run a specific day, replace `X` with the day number you want:
 
 ```bash
-bun run dayX
+bun start -d X
 ```
 
 This project was created using `bun init` in bun v1.1.38. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.

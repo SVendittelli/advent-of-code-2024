@@ -1,8 +1,7 @@
-const path = "day2/input.txt";
-const file = Bun.file(path);
+import { readFile } from "../utils";
 
-const input = await file.text();
-const lines = input.trim().split("\n");
+const path = "day02/input.txt";
+const lines = await readFile(path);
 
 const safetyChecker = (levels: number[]) => {
   let direction = Math.sign(levels[0] - levels[1]);
@@ -18,12 +17,28 @@ const safetyChecker = (levels: number[]) => {
   return true;
 };
 
-let count = 0;
+let count1 = 0;
+let count2 = 0;
 for (let i = 0; i < lines.length; ++i) {
   const line = lines[i];
   const levels = line.split(" ").map((level) => +level);
 
-  if (safetyChecker(levels)) ++count;
+  if (safetyChecker(levels)) {
+    ++count1;
+    ++count2;
+    continue;
+  }
+
+  for (let j = 0; j < levels.length; ++j) {
+    const tempLevels = [...levels];
+    tempLevels.splice(j, 1);
+    const safeIfRemoved = safetyChecker(tempLevels);
+    if (safeIfRemoved) {
+      ++count2;
+      break;
+    }
+  }
 }
 
-console.log(count);
+console.log("part 1", count1);
+console.log("part 2", count2);
