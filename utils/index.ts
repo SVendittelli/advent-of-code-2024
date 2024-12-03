@@ -2,16 +2,22 @@ import { readdir } from "node:fs/promises";
 import type { Day } from "./types";
 
 /**
+ * Read all of a given file.
+ * @param {string} path The path to the file to read
+ * @returns {Promise<string>} The whole file as a string
+ */
+export const readWholeFile = async (path: string): Promise<string> => {
+  return Bun.file(path).text();
+};
+
+/**
  * Read all the lines of a given file.
  * @param {string} path The path to the file to read
  * @returns {Promise<string[]>} An array of each of the lines of the file as a string
  */
 export const readFile = async (path: string): Promise<string[]> => {
-  const file = Bun.file(path);
-
-  const input = await file.text();
-  const lines = input.trim().split("\n");
-  return lines;
+  const input = await readWholeFile(path);
+  return input.trim().split("\n");
 };
 
 export const numberToDay = (num: number): Day => {

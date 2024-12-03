@@ -1,31 +1,26 @@
-import { readFile } from "../utils";
+import { readWholeFile } from "../utils";
 
 const path = "day03/input.txt";
-const lines = await readFile(path);
+const input = await readWholeFile(path);
 
-const input = lines.join(" ");
-
-const regex = /(mul\([0-9]{1,3},[0-9]{1,3}\))|(do\(\))|(don't\(\))/g;
+const regex = /(?:mul|do|don't)\((?:(\d+),(\d+))?\)/g;
 const matches = input.matchAll(regex);
 
 let enabled = true;
 const [total1, total2] = matches
-  .map(([match]) => {
+  .map(([match, num1, num2]) => {
     switch (match) {
       case "do()":
         enabled = true;
-        break;
+        return [0, 0];
       case "don't()":
         enabled = false;
-        break;
+        return [0, 0];
       default:
-        const comma = match.indexOf(",");
-        const num1 = +match.substring(4, comma);
-        const num2 = +match.substring(comma + 1, match.length - 1);
-        return [num1 * num2, enabled ? num1 * num2 : 0];
+        const product = +num1 * +num2;
+        return [product, enabled ? product : 0];
     }
   })
-  .map((x) => x ?? [0, 0])
   .reduce(
     ([acc1, acc2], [curr1, curr2]) => [acc1 + curr1, acc2 + curr2],
     [0, 0],
