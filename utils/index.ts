@@ -50,3 +50,7 @@ export const timerStop = (start: ReturnType<typeof timerStart>) => {
     `${prefix}: ${(new Date().valueOf() - start.time.valueOf()) / 1000} seconds`,
   );
 };
+
+/** Run the default code for a given day */
+export const runDay = async (day: Day) =>
+  await import(`~/${day}`).then((module) => module.default());

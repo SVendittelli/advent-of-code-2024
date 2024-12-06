@@ -9,10 +9,20 @@ https://adventofcode.com/2024/day/${dayToNumber(day)}
 `;
 
 const newIndex = (day: Day) =>
-  `import { readFile } from "../utils";
+  `import type { Run } from "~/utils/types";
+import { readFile } from "~/utils";
 
-const path = "${day}/input.txt";
-const lines = await readFile(path);
+
+const run: Run = async () => {
+  const filePath = "${day}/test-input.txt";
+  const lines = await readFile(filePath);
+
+  // solve
+
+  return [0,0];
+}
+
+export default run;
 `;
 
 const last = await lastDay();

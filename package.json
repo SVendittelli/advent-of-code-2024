@@ -5,12 +5,16 @@
   "scripts": {
     "start": "bun run index.ts",
     "start:watch": "bun --watch run index.ts",
-    "new": "bun run utils/newDay.ts"
+    "new": "bun run utils/newDay.ts",
+    "bench": "bun run utils/benchmark.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "mitata": "^1.0.20"
   }
 }
