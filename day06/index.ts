@@ -1,4 +1,6 @@
-import { readFile } from "../utils";
+import { readFile, timerStart, timerStop } from "../utils";
+
+const startTime = timerStart();
 
 declare type Point = {
   x: number;
@@ -63,11 +65,18 @@ const walk = (
 };
 
 /** Starting position */
-const start = lines
-  .map((line, i) => ({ x: line.indexOf("^"), y: i }))
-  .filter(({ x }) => x >= 0)[0];
+let start: Point = { x: 0, y: 0 };
+for (let row = 0; row < lines.length; ++row) {
+  const line = lines[row];
+  const col = line.indexOf("^");
+  if (col >= 0) {
+    start = { x: col, y: row };
+    break;
+  }
+}
 const up: Point = { x: 0, y: -1 };
 const path: Point[] = [];
+
 /** Make an empty array of all the places that have been visited */
 const newSeenArray = () => {
   const seen: Point[][][] = [];
@@ -79,18 +88,23 @@ const newSeenArray = () => {
 // walk the normal array
 walk(input, start, up, path, newSeenArray());
 
+const uniquePoints = path.filter(
+  (a, i, arr) => arr.findIndex((b) => pointEqual(a, b)) === i,
+);
+
 // for every unique point on the path that isn't the start, replace it with a blocker and try to walk it
 let count = 0;
-path
+uniquePoints
   .filter((point) => !pointEqual(start, point))
-  .filter((a, i, arr) => arr.findIndex((b) => pointEqual(a, b)) === i)
   .forEach(({ x, y }) => {
-    const grid = input.map((row) => row.map((col) => col));
-    grid[y][x] = "#";
-    if (walk(grid, start, up, [], newSeenArray())) {
+    input[y][x] = "#";
+    if (walk(input, start, up, [], newSeenArray())) {
       ++count;
     }
+    input[y][x] = ".";
   });
 
-console.log("part 1:", new Set(path.map((el) => `${el.x},${el.y}`)).size);
+console.log("part 1:", uniquePoints.length);
 console.log("part 2:", count);
+
+timerStop(startTime);

@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "bun run index.ts",
+    "start:watch": "bun --watch run index.ts",
     "new": "bun run utils/newDay.ts"
   },
   "devDependencies": {

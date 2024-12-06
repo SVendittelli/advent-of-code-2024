@@ -42,3 +42,7 @@ export const lastDay = async (): Promise<Day> => {
   const days = await allDays();
   return days.at(-1) ?? "day01";
 };
+
+export const timerStart = () => new Date();
+export const timerStop = (start: Date) =>
+  console.log(`${(new Date().valueOf() - start.valueOf()) / 1000} seconds`);
