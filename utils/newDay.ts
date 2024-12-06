@@ -6,7 +6,13 @@ const newReadme = (day: Day) =>
   `# ${day}
 
 https://adventofcode.com/2024/day/${dayToNumber(day)}
-`;
+
+# Benchmark
+
+Results in seconds:
+
+\`\`\`json
+\`\`\``;
 
 const newIndex = (day: Day) =>
   `import type { Run } from "~/utils/types";
