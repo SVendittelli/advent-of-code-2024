@@ -5,8 +5,8 @@ declare type Point = {
   y: number;
 };
 
-const path = "day06/input.txt";
-const lines = await readFile(path);
+const filePath = "day06/input.txt";
+const lines = await readFile(filePath);
 const input = lines.map((line) => line.split(""));
 
 const outsideGrid = (grid: string[][], pos: Point): boolean =>
@@ -25,15 +25,14 @@ const walk = (
   path: Point[],
   seen: Point[][][],
 ): boolean => {
-  // Base
+  // The next place to go would be off the grid, i.e. done
   let look: Point = { x: curr.x + dir.x, y: curr.y + dir.y };
   if (outsideGrid(grid, look)) {
-    // The next place to go would be off the grid
     path.push(curr);
     return false;
   }
 
-  // Seen before
+  // Seen before, i.e. in a loop
   const previousVisits = seen[curr.y][curr.x];
   if (previousVisits.some((prev) => pointEqual(dir, prev))) {
     return true;
@@ -41,13 +40,16 @@ const walk = (
 
   // Recursion
   // 1. pre
+  // track not only where has been visited, but in what direction
   seen[curr.y][curr.x].push(dir);
   path.push(curr);
 
   let next: Point = curr;
   if (grid[look.y][look.x] === "#") {
+    // if there is an obsticle, turn but don't move we we can re-check
     dir = turn(dir);
   } else {
+    // if the path is clear, move on
     next = { x: curr.x + dir.x, y: curr.y + dir.y };
   }
 
@@ -60,31 +62,35 @@ const walk = (
   return false;
 };
 
+/** Starting position */
 const start = lines
   .map((line, i) => ({ x: line.indexOf("^"), y: i }))
   .filter(({ x }) => x >= 0)[0];
 const up: Point = { x: 0, y: -1 };
-const mazePath: Point[] = [];
-const newSeen = () => {
+const path: Point[] = [];
+/** Make an empty array of all the places that have been visited */
+const newSeenArray = () => {
   const seen: Point[][][] = [];
   input.forEach((_) => seen.push([]));
   seen.forEach((row) => input[0].forEach((_) => row.push([])));
   return seen;
 };
 
-walk(input, start, up, mazePath, newSeen());
+// walk the normal array
+walk(input, start, up, path, newSeenArray());
 
+// for every unique point on the path that isn't the start, replace it with a blocker and try to walk it
 let count = 0;
-mazePath
+path
   .filter((point) => !pointEqual(start, point))
   .filter((a, i, arr) => arr.findIndex((b) => pointEqual(a, b)) === i)
   .forEach(({ x, y }) => {
-    input[y][x] = "#";
-    if (walk(input, start, up, [], newSeen())) {
+    const grid = input.map((row) => row.map((col) => col));
+    grid[y][x] = "#";
+    if (walk(grid, start, up, [], newSeenArray())) {
       ++count;
     }
-    input[y][x] = ".";
   });
 
-console.log("part 1:", new Set(mazePath.map((el) => `${el.x},${el.y}`)).size);
+console.log("part 1:", new Set(path.map((el) => `${el.x},${el.y}`)).size);
 console.log("part 2:", count);
