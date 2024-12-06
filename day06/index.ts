@@ -1,6 +1,4 @@
-import { readFile, timerStart, timerStop } from "../utils";
-
-const startTime = timerStart();
+import { readFile } from "../utils";
 
 declare type Point = {
   x: number;
@@ -106,5 +104,3 @@ uniquePoints
 
 console.log("part 1:", uniquePoints.length);
 console.log("part 2:", count);
-
-timerStop(startTime);

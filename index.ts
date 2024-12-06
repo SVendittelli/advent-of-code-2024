@@ -1,5 +1,5 @@
 import { parseArgs } from "util";
-import { allDays, lastDay, numberToDay } from "./utils";
+import { allDays, lastDay, numberToDay, timerStart, timerStop } from "./utils";
 import type { Day } from "./utils/types";
 
 const { values } = parseArgs({
@@ -20,9 +20,13 @@ const { values } = parseArgs({
 
 const runDay = async (day: Day) => {
   console.group(day);
+  const start = timerStart();
   await import(`./${day}`);
+  timerStop(start);
   console.groupEnd();
 };
+
+const start = timerStart("total");
 
 if (values.all) {
   // Run all the days
@@ -41,3 +45,5 @@ if (values.all) {
   const day = await lastDay();
   await runDay(day);
 }
+
+timerStop(start);

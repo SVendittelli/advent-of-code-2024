@@ -43,6 +43,10 @@ export const lastDay = async (): Promise<Day> => {
   return days.at(-1) ?? "day01";
 };
 
-export const timerStart = () => new Date();
-export const timerStop = (start: Date) =>
-  console.log(`${(new Date().valueOf() - start.valueOf()) / 1000} seconds`);
+export const timerStart = (label?: string) => ({ label, time: new Date() });
+export const timerStop = (start: ReturnType<typeof timerStart>) => {
+  const prefix = start.label ?? "time";
+  console.log(
+    `${prefix}: ${(new Date().valueOf() - start.time.valueOf()) / 1000} seconds`,
+  );
+};
