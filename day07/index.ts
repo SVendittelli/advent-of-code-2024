@@ -10,40 +10,39 @@ const run: Run = async () => {
     return [+big, list.split(" ").map((el) => +el)] as const;
   });
 
-  const operations: ((a: number, b: number) => number)[] = [
-    (a, b) => a * b,
-    (a, b) => a + b,
-  ];
-
   const exec = (
-    big: number,
+    goal: number,
     list: number[],
-    index: number,
     acc: number,
+    checkConcat: boolean,
   ): boolean => {
-    if (acc === big) return true;
-    if (acc > big) return false;
-    if (index > list.length) return false;
-
-    for (let operation of operations) {
-      if (exec(big, list, index + 1, operation(acc, list[index]))) {
-        return true;
-      }
+    if (list.length <= 0) {
+      return acc === goal;
     }
+    if (acc > goal) return false;
 
-    return false;
+    const value = list[0];
+    const result =
+      exec(goal, list.slice(1), acc + value, checkConcat) ||
+      exec(goal, list.slice(1), acc * value, checkConcat) ||
+      (checkConcat &&
+        exec(goal, list.slice(1), +`${acc}${value}`, checkConcat));
+    return result;
   };
 
   let sum1 = 0;
+  let sum2 = 0;
   for (let i = 0; i < input.length; ++i) {
-    const [big, list] = input[i];
-    let acc = 0;
-    if (exec(big, list, 0, acc)) {
-      sum1 += big;
+    const [goal, list] = input[i];
+    if (exec(goal, list, 0, false)) {
+      sum1 += goal;
+    }
+    if (exec(goal, list, 0, true)) {
+      sum2 += goal;
     }
   }
 
-  return [sum1, 0];
+  return [sum1, sum2];
 };
 
 export default run;
