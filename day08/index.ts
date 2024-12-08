@@ -14,13 +14,13 @@ type Pair = {
 
 const isOnMap = (map: string[], loc: Location): boolean =>
   loc.x >= 0 && loc.x < map[0].length && loc.y >= 0 && loc.y < map.length;
-const backwards = (pos: Location, dir: Location): Location => ({
-  x: pos.x - dir.x,
-  y: pos.y - dir.y,
+const diff = (a: Location, b: Location): Location => ({
+  x: a.x - b.x,
+  y: a.y - b.y,
 });
-const forwards = (pos: Location, dir: Location): Location => ({
-  x: pos.x + dir.x,
-  y: pos.y + dir.y,
+const sum = (a: Location, b: Location): Location => ({
+  x: a.x + b.x,
+  y: a.y + b.y,
 });
 const filterUnique = (list: Location[]): Location[] =>
   list.filter(
@@ -33,12 +33,12 @@ const run: Run = async () => {
   const lines = await readFile(filePath);
 
   const antennas: Antennas = {};
-  for (let row = 0; row < lines.length; ++row) {
-    for (let col = 0; col < lines[0].length; ++col) {
-      const frequency = lines[row][col];
+  for (let y = 0; y < lines.length; ++y) {
+    for (let x = 0; x < lines[0].length; ++x) {
+      const frequency = lines[y][x];
       if (frequency === ".") continue;
       antennas[frequency] ??= [];
-      antennas[frequency].push({ x: col, y: row });
+      antennas[frequency].push({ x, y });
     }
   }
 
@@ -48,30 +48,31 @@ const run: Run = async () => {
     const freqPairs: Pair[] = antennas[frequency].flatMap((a, i) =>
       antennas[frequency]
         .slice(i + 1)
-        .map((b) => ({ a, b, displacement: { x: b.x - a.x, y: b.y - a.y } })),
+        .map((b) => ({ a, b, displacement: diff(b, a) })),
     );
+
     freqPairs.forEach(({ a, b, displacement }) => {
       // part 1
-      let prev = backwards(a, displacement);
+      let prev = diff(a, displacement);
       let prevOnMap = isOnMap(lines, prev);
       if (prevOnMap) antinodes.push(prev);
-      let next = forwards(b, displacement);
+      let next = sum(b, displacement);
       let nextOnMap = isOnMap(lines, next);
       if (nextOnMap) antinodes.push(next);
 
       // part 2
-      prev = backwards(b, displacement);
+      prev = diff(b, displacement);
       prevOnMap = isOnMap(lines, prev);
       while (prevOnMap) {
         harmonicAntinodes.push(prev);
-        prev = backwards(prev, displacement);
+        prev = diff(prev, displacement);
         prevOnMap = isOnMap(lines, prev);
       }
-      next = forwards(a, displacement);
+      next = sum(a, displacement);
       nextOnMap = isOnMap(lines, next);
       while (nextOnMap) {
         harmonicAntinodes.push(next);
-        next = forwards(next, displacement);
+        next = sum(next, displacement);
         nextOnMap = isOnMap(lines, next);
       }
     });
