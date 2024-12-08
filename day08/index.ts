@@ -30,12 +30,12 @@ const filterUnique = (list: Location[]): Location[] =>
 
 const run: Run = async () => {
   const filePath = "day08/input.txt";
-  const lines = await readFile(filePath);
+  const map = await readFile(filePath);
 
   const antennas: Antennas = {};
-  for (let y = 0; y < lines.length; ++y) {
-    for (let x = 0; x < lines[0].length; ++x) {
-      const frequency = lines[y][x];
+  for (let y = 0; y < map.length; ++y) {
+    for (let x = 0; x < map[0].length; ++x) {
+      const frequency = map[y][x];
       if (frequency === ".") continue;
       antennas[frequency] ??= [];
       antennas[frequency].push({ x, y });
@@ -54,26 +54,26 @@ const run: Run = async () => {
     freqPairs.forEach(({ a, b, displacement }) => {
       // part 1
       let prev = diff(a, displacement);
-      let prevOnMap = isOnMap(lines, prev);
+      let prevOnMap = isOnMap(map, prev);
       if (prevOnMap) antinodes.push(prev);
       let next = sum(b, displacement);
-      let nextOnMap = isOnMap(lines, next);
+      let nextOnMap = isOnMap(map, next);
       if (nextOnMap) antinodes.push(next);
 
       // part 2
       prev = diff(b, displacement);
-      prevOnMap = isOnMap(lines, prev);
+      prevOnMap = isOnMap(map, prev);
       while (prevOnMap) {
         harmonicAntinodes.push(prev);
         prev = diff(prev, displacement);
-        prevOnMap = isOnMap(lines, prev);
+        prevOnMap = isOnMap(map, prev);
       }
       next = sum(a, displacement);
-      nextOnMap = isOnMap(lines, next);
+      nextOnMap = isOnMap(map, next);
       while (nextOnMap) {
         harmonicAntinodes.push(next);
         next = sum(next, displacement);
-        nextOnMap = isOnMap(lines, next);
+        nextOnMap = isOnMap(map, next);
       }
     });
   }
