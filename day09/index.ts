@@ -28,7 +28,7 @@ const run: Run = async () => {
     const length = digits[i];
 
     // Part 1
-    drive = drive.concat(new Array(digits[i]).fill(isFile ? id : -1));
+    drive = drive.concat(new Array(length).fill(isFile ? id : -1));
 
     // Part 2
     if (isFile) {
