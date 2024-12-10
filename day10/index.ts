@@ -39,6 +39,7 @@ const run: Run = async () => {
     path: Point[],
     seen: boolean[][],
     paths: Point[][],
+    noDuplicates: boolean,
   ): boolean => {
     // walked off the grid
     if (outsideGrid(grid, curr)) return false;
@@ -54,7 +55,7 @@ const run: Run = async () => {
     }
 
     // Valid point on path
-    seen[curr.y][curr.x] = true;
+    seen[curr.y][curr.x] = noDuplicates && true;
 
     // reached a 9
     if (grid[curr.y][curr.x] === 9) return true;
@@ -62,9 +63,8 @@ const run: Run = async () => {
     path.push(curr);
 
     for (let dir of directions) {
-      if (
-        walk(grid, { x: curr.x + dir.x, y: curr.y + dir.y }, path, seen, paths)
-      ) {
+      const newPos: Point = { x: curr.x + dir.x, y: curr.y + dir.y };
+      if (walk(grid, newPos, path, seen, paths, noDuplicates)) {
         paths.push([...path]);
       }
     }
@@ -73,12 +73,14 @@ const run: Run = async () => {
     return false;
   };
 
-  let paths: Point[][] = [];
+  let scorePaths: Point[][] = [];
+  let ratingPaths: Point[][] = [];
   for (let start of starts) {
-    walk(grid, start, [], newSeen(grid), paths);
+    walk(grid, start, [], newSeen(grid), scorePaths, true);
+    walk(grid, start, [], newSeen(grid), ratingPaths, false);
   }
 
-  return [paths.length, 0];
+  return [scorePaths.length, ratingPaths.length];
 };
 
 export default run;
