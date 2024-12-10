@@ -10,7 +10,7 @@ const outsideGrid = (grid: number[][], pos: Point): boolean =>
   pos.x < 0 || pos.x >= grid[0].length || pos.y < 0 || pos.y >= grid.length;
 
 const newSeen = (grid: number[][]): boolean[][] =>
-  grid.map((row) => new Array(row.length).fill(null).map((_) => false));
+  grid.map((row) => new Array(row.length).fill(false));
 
 const directions: Point[] = [
   { x: 0, y: -1 },
@@ -43,7 +43,9 @@ const run: Run = async () => {
   ): boolean => {
     // walked off the grid
     if (outsideGrid(grid, curr)) return false;
-    if (seen[curr.y][curr.x]) return false;
+
+    // been here before
+    if (noDuplicates && seen[curr.y][curr.x]) return false;
 
     // current point not exactly 1 more than the last
     const lastPoint = path.at(-1);
@@ -55,7 +57,7 @@ const run: Run = async () => {
     }
 
     // Valid point on path
-    seen[curr.y][curr.x] = noDuplicates && true;
+    seen[curr.y][curr.x] = true;
 
     // reached a 9
     if (grid[curr.y][curr.x] === 9) return true;
