@@ -12,8 +12,29 @@ type Region = {
   points: Point[];
 };
 
+const corners: Point[] = [
+  { x: 1, y: -1 },
+  { x: 1, y: 1 },
+  { x: -1, y: 1 },
+  { x: -1, y: -1 },
+];
+
+/**
+ * An array of the triplets of the cells in the two orthogonal cardinal
+ * directions and the diagonal between them.
+ */
+const getCorners = ({ x, y }: Point): [Point, Point, Point][] =>
+  corners.map((c) => [
+    { x: x + c.x, y },
+    { x: x + c.x, y: y + c.y },
+    { x, y: y + c.y },
+  ]);
+
 const outsideGrid = (grid: string[], pos: Point): boolean =>
   pos.x < 0 || pos.x >= grid[0].length || pos.y < 0 || pos.y >= grid.length;
+
+const isIn = (point: Point, array: Point[]): boolean =>
+  !!array.find(({ x, y }) => point.x === x && point.y === y);
 
 const run: Run = async () => {
   const filePath = "day12/input.txt";
@@ -63,27 +84,50 @@ const run: Run = async () => {
   const regions: Region[] = [];
   let points: Point[] = [];
 
-  for (let row = 0; row < input.length; ++row) {
-    for (let col = 0; col < input[0].length; ++col) {
-      if (!(points.findIndex(({ x, y }) => x === col && y === row) >= 0)) {
+  for (let y = 0; y < input.length; ++y) {
+    for (let x = 0; x < input[0].length; ++x) {
+      const point = { x, y };
+      if (!isIn(point, points)) {
         const region: Region = {
-          id: input[row][col],
+          id: input[y][x],
           perimiter: 0,
           points: [],
         };
-        walk(input, { x: col, y: row }, newSeen(), region);
+        walk(input, point, newSeen(), region);
         regions.push(region);
         points = points.concat(region.points);
       }
     }
   }
 
-  const fenceCost = regions.reduce(
+  const fenceCost1 = regions.reduce(
     (acc, region) => acc + region.points.length * region.perimiter,
     0,
   );
 
-  return [fenceCost, 0];
+  const fenceCost2 = regions.reduce((acc, region) => {
+    // The number of corners is the same as the number of sides
+    let sides = 0;
+    // Visit every point, checking if it is a corner
+    for (let point of region.points) {
+      const corners = getCorners(point);
+      // Check the four corner directions
+      for (let corner of corners) {
+        const inArray = corner.map((p) => isIn(p, region.points));
+        // If neither adjacent cell is in then we're on an exterior corner
+        if (!inArray[0] && !inArray[2]) {
+          sides++;
+        }
+        // If both adjacent cells are in but not the diagonal then we're on an interior corner
+        if (inArray[0] && !inArray[1] && inArray[2]) {
+          sides++;
+        }
+      }
+    }
+    return acc + sides * region.points.length;
+  }, 0);
+
+  return [fenceCost1, fenceCost2];
 };
 
 export default run;
