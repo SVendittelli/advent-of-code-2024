@@ -63,7 +63,32 @@ const run: Run = async () => {
 
   const factor = calculateSaftyFactor(move(robots, 100));
 
-  return [factor, 0];
+  const print = (robots: Robot[]) => {
+    const grid = new Array(height)
+      .fill(null)
+      .map((_) => new Array(width).fill(null).map((_) => 0));
+    robots.forEach(({ p }) => (grid[p.y][p.x] = grid[p.y][p.x] + 1));
+    grid.forEach((row) =>
+      console.log(row.map((value) => `${value || " "}`).join("")),
+    );
+  };
+
+  let lowest = Number.MAX_SAFE_INTEGER;
+  let overlap = false;
+  let rs: Robot[] = robots;
+  for (let i = 0; !overlap; ++i) {
+    rs = move(robots, i);
+    overlap = !rs.some(
+      ({ p }, i) =>
+        rs.findIndex(({ p: { x, y } }) => p.x === x && p.y === y) !== i,
+    );
+    if (overlap) {
+      lowest = Math.min(lowest, i);
+    }
+  }
+  print(rs);
+
+  return [factor, lowest];
 };
 
 export default run;
