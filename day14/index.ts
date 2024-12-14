@@ -4,7 +4,7 @@ import { readFile } from "~/utils";
 type Vector = { x: number; y: number };
 type Robot = { p: Vector; v: Vector };
 
-const run: Run = async () => {
+const run: Run = async (disableLogging) => {
   const filePath = "day14/input.txt";
   const lines = await readFile(filePath);
 
@@ -64,6 +64,7 @@ const run: Run = async () => {
   const factor = calculateSaftyFactor(move(robots, 100));
 
   const print = (robots: Robot[]) => {
+    if (disableLogging) return;
     const grid = new Array(height)
       .fill(null)
       .map((_) => new Array(width).fill(null).map((_) => 0));

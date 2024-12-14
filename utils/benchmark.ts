@@ -14,7 +14,7 @@ const benchAll = async () => {
 };
 
 const benchDay = async (day: Day) => {
-  bench(async () => await runDay(day));
+  bench(async () => await runDay(day, true));
 
   return run({ format: "quiet" }).then(({ benchmarks }) => benchmarks);
 };
