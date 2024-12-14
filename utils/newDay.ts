@@ -18,7 +18,6 @@ const newIndex = (day: Day) =>
   `import type { Run } from "~/utils/types";
 import { readFile } from "~/utils";
 
-
 const run: Run = async () => {
   const filePath = "${day}/test-input.txt";
   const lines = await readFile(filePath);
