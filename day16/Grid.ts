@@ -1,6 +1,7 @@
-import Node from "./Node";
-import type { Input, Point } from "./types";
 import { DIRECTIONS } from "./constants";
+import Node from "./Node";
+import { Direction, type Input, type Point } from "./types";
+import { add, turn } from "./utils";
 
 type GridParams = {
   input: Input;
@@ -21,12 +22,33 @@ export class Grid {
     this.nodes = this.nodesFromInput(input, this.height, this.width);
   }
 
-  public getNodeDirectionsAt({ x, y }: Point): NodeDirections {
-    return this.nodes[y][x];
+  public getAdjacentNodes(point: Point, facing: Direction): Node[] {
+    const nodes: Node[] = [];
+
+    const options = [
+      { point: add(point, DIRECTIONS[facing]), facing },
+      { point, facing: turn(facing, true) },
+      { point, facing: turn(facing, false) },
+    ];
+
+    for (let { point, facing } of options) {
+      if (this.isOnGrid(point) && this.isWalkableAt(point, facing))
+        nodes.push(this.getNodeAt(point, facing));
+    }
+
+    return nodes;
+  }
+
+  public getNodeAt(point: Point, facing: Direction): Node {
+    return this.nodes[point.y][point.x][facing];
   }
 
   private isOnGrid({ x, y }: Point): boolean {
     return x >= 0 && x < this.width && y >= 0 && y < this.height;
+  }
+
+  private isWalkableAt(point: Point, facing: Direction): boolean {
+    return this.getNodeAt(point, facing).isWalkable;
   }
 
   private nodesFromInput(input: Input, height: number, width: number): Nodes {
@@ -36,26 +58,26 @@ export class Grid {
       newNodes[y] = [];
       for (let x = 0; x < width; ++x) {
         newNodes[y][x] = new Array(4) as NodeDirections;
-        for (let dirIdx = 0; dirIdx < 4; ++dirIdx) {
-          const facing = DIRECTIONS[dirIdx];
+        for (let dir = 0; dir < 4; ++dir) {
+          const facing: Direction = dir;
           let isWalkable = input[y][x] !== "#";
 
           switch (facing) {
-            case "E":
+            case Direction.E:
               isWalkable &&= input[y][x - 1] !== "#";
               break;
-            case "S":
+            case Direction.S:
               isWalkable &&= input[y - 1][x] !== "#";
               break;
-            case "W":
+            case Direction.W:
               isWalkable &&= input[y][x + 1] !== "#";
               break;
-            case "N":
+            case Direction.N:
               isWalkable &&= input[y + 1][x] !== "#";
               break;
           }
 
-          newNodes[y][x][dirIdx] = new Node({ x, y, facing, isWalkable });
+          newNodes[y][x][dir] = new Node({ x, y, facing, isWalkable });
         }
       }
     }

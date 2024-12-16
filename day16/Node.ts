@@ -17,7 +17,7 @@ export default class Node {
   constructor({ x, y, facing, isWalkable }: NodeParams) {
     this.pos = { x, y };
     this.facing = facing;
-    this.id = `${y},${x}>${facing}`;
+    this.id = `${x},${y}>${facing}`;
 
     this._isWalkable = isWalkable;
   }
