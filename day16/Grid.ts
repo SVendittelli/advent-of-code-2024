@@ -58,25 +58,10 @@ export class Grid {
       newNodes[y] = [];
       for (let x = 0; x < width; ++x) {
         newNodes[y][x] = new Array(4) as NodeDirections;
+        const isWalkable = input[y][x] !== "#";
+
         for (let dir = 0; dir < 4; ++dir) {
           const facing: Direction = dir;
-          let isWalkable = input[y][x] !== "#";
-
-          switch (facing) {
-            case Direction.E:
-              isWalkable &&= input[y][x - 1] !== "#";
-              break;
-            case Direction.S:
-              isWalkable &&= input[y - 1][x] !== "#";
-              break;
-            case Direction.W:
-              isWalkable &&= input[y][x + 1] !== "#";
-              break;
-            case Direction.N:
-              isWalkable &&= input[y + 1][x] !== "#";
-              break;
-          }
-
           newNodes[y][x][dir] = new Node({ x, y, facing, isWalkable });
         }
       }

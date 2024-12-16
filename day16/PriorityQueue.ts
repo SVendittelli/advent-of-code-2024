@@ -16,6 +16,10 @@ export default class PriorityQueue {
     return this.items.length;
   }
 
+  public contains(node: Node): boolean {
+    return this.items.some((item) => item.node.id === node.id);
+  }
+
   public enqueue(node: Node, priority: number): void {
     let item: Item = { node, priority };
     let inserted = false;

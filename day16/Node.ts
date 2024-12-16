@@ -1,4 +1,5 @@
-import type { Direction, Point } from "./types";
+import { Direction, type Point } from "./types";
+import { equals } from "./utils";
 
 export type NodeParams = {
   x: number;
@@ -26,10 +27,21 @@ export default class Node {
 
   get id() {
     const { x, y } = this.pos;
-    return `${x},${y}>${this.facing}`;
+    return `${x},${y}>${Direction[this.facing]}`;
   }
 
   get fScore() {
     return this.gScore + this.hScore;
+  }
+
+  public print(loggingDisabled?: boolean): void {
+    if (loggingDisabled) return;
+    console.log(this.id);
+  }
+
+  public distance(node: Node): number {
+    if (equals(this.pos, node.pos) && this.facing !== node.facing) return 1000;
+    if (!equals(this.pos, node.pos) && this.facing === node.facing) return 1;
+    return Number.POSITIVE_INFINITY;
   }
 }
