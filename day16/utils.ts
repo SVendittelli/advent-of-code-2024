@@ -4,6 +4,8 @@ export const add = (a: Point, b: Point): Point => ({
   x: a.x + b.x,
   y: a.y + b.y,
 });
+export const equals = (a: Point, b: Point): boolean =>
+  a.x === b.x && a.y === b.y;
 
 export const turn = (direction: Direction, clockwise: boolean) => {
   let newDirection: Direction;

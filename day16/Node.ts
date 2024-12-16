@@ -8,24 +8,28 @@ export type NodeParams = {
 };
 
 export default class Node {
-  readonly id: string;
   readonly pos: Point;
   readonly facing: Direction;
 
-  private _isWalkable: boolean;
+  gScore: number;
+  hScore: number;
+  isWalkable: boolean;
 
   constructor({ x, y, facing, isWalkable }: NodeParams) {
     this.pos = { x, y };
     this.facing = facing;
-    this.id = `${x},${y}>${facing}`;
+    this.isWalkable = isWalkable;
 
-    this._isWalkable = isWalkable;
+    this.gScore = Number.POSITIVE_INFINITY;
+    this.hScore = Number.POSITIVE_INFINITY;
   }
 
-  get isWalkable() {
-    return this._isWalkable;
+  get id() {
+    const { x, y } = this.pos;
+    return `${x},${y}>${this.facing}`;
   }
-  set isWalkable(isWalkable: boolean) {
-    this._isWalkable = isWalkable;
+
+  get fScore() {
+    return this.gScore + this.hScore;
   }
 }

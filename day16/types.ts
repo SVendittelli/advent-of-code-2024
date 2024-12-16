@@ -7,3 +7,4 @@ export enum Direction {
 
 export type Input = string[][];
 export type Point = { x: number; y: number };
+export type Location = { position: Point; facing: Direction };
