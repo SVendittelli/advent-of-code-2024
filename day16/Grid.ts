@@ -32,6 +32,12 @@ export class Grid {
     ];
 
     for (let { point, facing } of options) {
+      //console.log(
+      //  point,
+      //  facing,
+      //  this.isOnGrid(point),
+      //  this.isWalkableAt(point, facing),
+      //);
       if (this.isOnGrid(point) && this.isWalkableAt(point, facing))
         nodes.push(this.getNodeAt(point, facing));
     }
@@ -41,6 +47,22 @@ export class Grid {
 
   public getNodeAt(point: Point, facing: Direction): Node {
     return this.nodes[point.y][point.x][facing];
+  }
+
+  public print(points: Set<string>, loggingDisabled?: boolean): void {
+    if (loggingDisabled) return;
+    this.nodes.forEach((row, y) =>
+      console.log(
+        row
+          .map((dir, x) => {
+            if (!dir[0].isWalkable) {
+              return "#";
+            }
+            return points.has(`${x},${y}`) ? "O" : ".";
+          })
+          .join(""),
+      ),
+    );
   }
 
   private isOnGrid({ x, y }: Point): boolean {
