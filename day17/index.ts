@@ -2,9 +2,9 @@ import type { Run } from "~/utils/types";
 import { readWholeFile } from "~/utils";
 
 class Computer {
-  public a: number;
-  public b: number;
-  public c: number;
+  public a: bigint;
+  public b: bigint;
+  public c: bigint;
   public program: number[];
 
   private pointer: number = 0;
@@ -19,24 +19,24 @@ class Computer {
     program: number[],
     loggingDisabled?: boolean,
   ) {
-    this.a = a;
-    this.b = b;
-    this.c = c;
+    this.a = BigInt(a);
+    this.b = BigInt(b);
+    this.c = BigInt(c);
     this.program = program;
-    this.loggingDisabled = loggingDisabled ?? false;
+    this.loggingDisabled = loggingDisabled ?? true;
   }
 
   get output(): string {
     return this._output.join();
   }
 
-  public run(): void {
+  public run(): string {
     this.print();
     while (this.pointer < this.program.length) {
-      //prompt();
       this.exec(this.program[this.pointer], this.program[this.pointer + 1]);
       this.print();
     }
+    return this.output;
   }
 
   public print(): void {
@@ -83,13 +83,14 @@ class Computer {
     return operand;
   }
 
-  private combo(operand: number): number {
+  private combo(operand: number): bigint {
+    if (operand < 0 || operand > 7) throw new Error();
     switch (operand) {
       case 0:
       case 1:
       case 2:
       case 3:
-        return this.literal(operand);
+        return BigInt(this.literal(operand));
       case 4:
         return this.a;
       case 5:
@@ -102,25 +103,25 @@ class Computer {
 
   private adv(operand: number): void {
     if (!this.loggingDisabled) console.log("adv", operand);
-    this.a = Math.trunc(this.a / Math.pow(2, this.combo(operand)));
+    this.a = this.a / 2n ** this.combo(operand);
     this.pointer += 2;
   }
 
   private bxl(operand: number) {
     if (!this.loggingDisabled) console.log("bxl", operand);
-    this.b ^= this.literal(operand);
+    this.b ^= BigInt(this.literal(operand));
     this.pointer += 2;
   }
 
   private bst(operand: number) {
     if (!this.loggingDisabled) console.log("bst", operand);
-    this.b = this.combo(operand) % 8;
+    this.b = this.combo(operand) % 8n;
     this.pointer += 2;
   }
 
   private jnz(operand: number) {
     if (!this.loggingDisabled) console.log("jnz", operand);
-    if (this.a === 0) {
+    if (this.a === 0n) {
       this.pointer += 2;
       return;
     }
@@ -135,26 +136,24 @@ class Computer {
 
   private out(operand: number) {
     if (!this.loggingDisabled) console.log("out", operand);
-    this._output.push(this.combo(operand) % 8);
+    this._output.push(Number(this.combo(operand) % 8n));
     this.pointer += 2;
   }
 
   private bdv(operand: number) {
     if (!this.loggingDisabled) console.log("bdv", operand);
-    this.b = Math.trunc(this.a / Math.pow(2, this.combo(operand)));
+    this.b = this.a / 2n ** this.combo(operand);
     this.pointer += 2;
   }
 
   private cdv(operand: number) {
     if (!this.loggingDisabled) console.log("cdv", operand);
-    this.c = Math.trunc(this.a / Math.pow(2, this.combo(operand)));
+    this.c = this.a / 2n ** this.combo(operand);
     this.pointer += 2;
   }
 }
 
-const run: Run = async (loggingDisabled) => {
-  //const filePath = "day17/test-input.txt";
-  //const filePath = "day17/test-input-2.txt";
+const run: Run = async () => {
   const filePath = "day17/input.txt";
   const input = (await readWholeFile(filePath)).split("\n\n");
 
@@ -162,25 +161,29 @@ const run: Run = async (loggingDisabled) => {
     .split("\n")
     .map((line) => line.split(": ")[1])
     .map(Number);
-  const program = input[1].split(": ")[1].split(",").map(Number);
-  const programString = program.join();
+  const programString = input[1].split(": ")[1].trim();
+  const program = programString.split(",").map(Number);
 
-  let computer = new Computer(a, b, c, program, true);
-  computer.run();
-  const part1 = computer.output;
+  const part1 = new Computer(a, b, c, program).run();
 
-  let i = 0;
+  let testStart = 0;
+  let test: number;
   while (true) {
-    console.log(i);
-    computer = new Computer(i, b, c, program, true);
-    computer.run();
-    computer.print();
-    if (computer.output === programString) break;
-    i += 1;
-    //prompt();
+    let result: string;
+
+    for (let i = 0; true; ++i) {
+      test = testStart + i;
+      result = new Computer(test, b, c, program).run();
+
+      if (programString.endsWith(result)) break;
+    }
+
+    if (result === programString) break;
+
+    testStart = test * 8;
   }
 
-  return [part1, 0];
+  return [part1, test];
 };
 
 export default run;
