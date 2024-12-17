@@ -33,6 +33,7 @@ class Computer {
   public run(): void {
     this.print();
     while (this.pointer < this.program.length) {
+      //prompt();
       this.exec(this.program[this.pointer], this.program[this.pointer + 1]);
       this.print();
     }
@@ -153,6 +154,7 @@ class Computer {
 
 const run: Run = async (loggingDisabled) => {
   //const filePath = "day17/test-input.txt";
+  //const filePath = "day17/test-input-2.txt";
   const filePath = "day17/input.txt";
   const input = (await readWholeFile(filePath)).split("\n\n");
 
@@ -160,15 +162,25 @@ const run: Run = async (loggingDisabled) => {
     .split("\n")
     .map((line) => line.split(": ")[1])
     .map(Number);
-  //console.log(a, b, c);
   const program = input[1].split(": ")[1].split(",").map(Number);
-  //console.log(program);
+  const programString = program.join();
 
-  const computer = new Computer(a, b, c, program, loggingDisabled);
+  let computer = new Computer(a, b, c, program, true);
   computer.run();
-  //console.log(computer.output);
+  const part1 = computer.output;
 
-  return [computer.output, 0];
+  let i = 0;
+  while (true) {
+    console.log(i);
+    computer = new Computer(i, b, c, program, true);
+    computer.run();
+    computer.print();
+    if (computer.output === programString) break;
+    i += 1;
+    //prompt();
+  }
+
+  return [part1, 0];
 };
 
 export default run;
